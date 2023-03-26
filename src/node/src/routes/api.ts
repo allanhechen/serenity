@@ -1,10 +1,10 @@
-import { Router } from "express";
-import auth from "../middlewares/auth";
+import { Router, Request, Response, NextFunction } from "express";
+import auth from "../middlewares/authenticate";
 const router = Router();
 
 router.use(auth);
 
-router.get("/", (req, res) => {
+router.use("/", (req: Request, res: Response) => {
   res.send("this is from the router");
 });
 
