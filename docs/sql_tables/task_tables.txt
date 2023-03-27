@@ -1,0 +1,44 @@
+CREATE TABLE tasks (
+  taskid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  start_date DATETIME NOT NULL,
+  end_date DATETIME,
+  status ENUM('untouched', 'inprogress', 'finished'),
+  importance_rating TINYINT(1) NOT NULL,
+  repeat ENUM('never', 'daily', 'weekly', 'monthly'),
+  description VARCHAR(255) CHARACTER SET utf8mb4,
+  time_required INT UNSIGNED,
+  picture_url VARCHAR(255),
+  hex_color VARCHAR(6)
+);
+
+CREATE TABLE userstotasks (
+  userid INT UNSIGNED NOT NULL,
+  taskid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (userid, taskid),
+  FOREIGN KEY (userid) REFERENCES users(userid),
+  FOREIGN KEY (taskid) REFERENCES tasks(taskid)
+);
+
+CREATE TABLE taskgroups (
+  taskgroupid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  groupname VARCHAR(255) NOT NULL,
+  color VARCHAR(6) NOT NULL,
+  picture_url VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE userstotaskgroups (
+  userid INT UNSIGNED NOT NULL,
+  taskgroupid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (userid, taskgroupid),
+  FOREIGN KEY (userid) REFERENCES users(userid),
+  FOREIGN KEY (taskgroupid) REFERENCES taskgroups(taskgroupid)
+);
+
+CREATE TABLE taskstotaskgroups (
+  taskid INT UNSIGNED NOT NULL,
+  taskgroupid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (taskid, taskgroupid),
+  FOREIGN KEY (taskid) REFERENCES tasks(taskid),
+  FOREIGN KEY (taskgroupid) REFERENCES taskgroups(taskgroupid)
+);

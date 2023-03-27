@@ -1,0 +1,12 @@
+CREATE TABLE users (
+  userid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  password CHAR(60),
+  email VARCHAR(255),
+  gender ENUM('male', 'female', 'other'),
+  timezone VARCHAR(255),
+  user_color VARCHAR(255),
+  last_login_date DATETIME,
+  picture_url VARCHAR(255)
+);

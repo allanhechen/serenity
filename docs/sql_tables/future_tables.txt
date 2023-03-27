@@ -1,0 +1,40 @@
+CREATE TABLE futures (
+  futureid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  date DATETIME,
+  importance_rating TINYINT(1) NOT NULL,
+  description VARCHAR(255) CHARACTER SET utf8mb4,
+  picture_url VARCHAR(255),
+  hex_color VARCHAR(6)
+);
+
+CREATE TABLE userstofutures (
+  userid INT UNSIGNED NOT NULL,
+  futureid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (userid, futureid),
+  FOREIGN KEY (userid) REFERENCES users(userid),
+  FOREIGN KEY (futureid) REFERENCES futures(futureid)
+);
+
+CREATE TABLE futuregroups (
+  futuregroupid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  groupname VARCHAR(255) NOT NULL,
+  color VARCHAR(6) NOT NULL,
+  picture_url VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE userstofuturegroups (
+  userid INT UNSIGNED NOT NULL,
+  futuregroupid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (userid, futuregroupid),
+  FOREIGN KEY (userid) REFERENCES users(userid),
+  FOREIGN KEY (futuregroupid) REFERENCES futuregroups(futuregroupid)
+);
+
+CREATE TABLE futurestofuturegroups (
+  futureid INT UNSIGNED NOT NULL,
+  futuregroupid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (futureid, futuregroupid),
+  FOREIGN KEY (futureid) REFERENCES futures(futureid),
+  FOREIGN KEY (futuregroupid) REFERENCES futuregroups(futuregroupid)
+);

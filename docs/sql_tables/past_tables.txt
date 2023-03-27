@@ -1,0 +1,56 @@
+CREATE TABLE pasts (
+  pastid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  date DATETIME NOT NULL,
+  importance_rating TINYINT(1) NOT NULL,
+  description VARCHAR(255) CHARACTER SET utf8mb4,
+  picture_url VARCHAR(255),
+  hex_color VARCHAR(6)
+);
+
+CREATE TABLE userstopasts (
+  userid INT UNSIGNED NOT NULL,
+  pastid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (userid, pastid),
+  FOREIGN KEY (userid) REFERENCES users(userid),
+  FOREIGN KEY (pastid) REFERENCES pasts(pastid)
+);
+
+CREATE TABLE pastgroups (
+  pastgroupid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  groupname VARCHAR(255) NOT NULL,
+  color VARCHAR(6) NOT NULL,
+  picture_url VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE userstopastgroups (
+  userid INT UNSIGNED NOT NULL,
+  pastgroupid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (userid, pastgroupid),
+  FOREIGN KEY (userid) REFERENCES users(userid),
+  FOREIGN KEY (pastgroupid) REFERENCES pastgroups(pastgroupid)
+);
+
+CREATE TABLE paststopastgroups (
+  pastid INT UNSIGNED NOT NULL,
+  pastgroupid INT UNSIGNED NOT NULL,
+  PRIMARY KEY (pastid, pastgroupid),
+  FOREIGN KEY (pastid) REFERENCES pasts(pastid),
+  FOREIGN KEY (pastgroupid) REFERENCES pastgroups(pastgroupid)
+);
+
+CREATE TABLE events (
+  eventid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  location VARCHAR(255) NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  description VARCHAR(1000) CHARACTER SET utf8mb4,
+  hex_color VARCHAR(6)
+);
+
+CREATE TABLE picturestoevents (
+  eventid INT UNSIGNED NOT NULL,
+  picture_url VARCHAR(255),
+  PRIMARY KEY (eventid, picture_url),
+  FOREIGN KEY (eventid) REFERENCES events(eventid),
+);
