@@ -12,6 +12,7 @@
     "bcrypt": "^5.1.0",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
+    "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.2.0",
     "ts-node": "^10.9.1"
