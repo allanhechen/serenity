@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { RowDataPacket } from "mysql2";
 import createConnection from "../utils/db";
 import {
+  validateName,
   validateEmail,
   validateUsername,
   validatePassword,
@@ -19,15 +20,12 @@ const router = Router();
 const saltRounds = 10;
 const secret = "your_secret_key";
 
-// router.use(checklogin);
-
 router.post(
   "/login",
   validateUsername,
   validatePassword,
   checkValidation,
   async (req, res) => {
-    console.log(req.body);
     let { username, password } = req.body;
 
     const conn = await createConnection;
@@ -60,6 +58,7 @@ router.post(
 
 router.post(
   "/signup",
+  validateName,
   validateEmail,
   validateUsername,
   validatePassword,
@@ -76,7 +75,7 @@ router.post(
     }
     const hashedPassword = await hashPassword(userData.password);
     await insertUser(userData, hashedPassword);
-    res.redirect("./login");
+    res.redirect(307, "./login");
   }
 );
 
@@ -98,7 +97,7 @@ async function hashPassword(password: string) {
 async function insertUser(userData: User, hashedPassword: string) {
   const conn = await createConnection;
   await conn.execute(
-    "INSERT INTO users (name, username, password, email, gender, timezone, color, last_login_date, profile_picture_url) \
+    "INSERT INTO users (name, username, password, email, gender, timezone, user_color, last_login_date, picture_url) \
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, '/path/to/profile.jpg');",
     [
       userData.name,
@@ -108,7 +107,7 @@ async function insertUser(userData: User, hashedPassword: string) {
       userData.gender,
       userData.timezone,
       userData.color,
-      userData.last_login_date,
+      new Date().toISOString().slice(0, 19).replace("T", " "),
     ]
   );
 }

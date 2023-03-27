@@ -1,6 +1,10 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
+const validateName = body("name")
+  .isAlphanumeric()
+  .withMessage("Name is invalid");
+
 const validateUsername = body("username")
   .trim()
   .isAlphanumeric()
@@ -39,7 +43,10 @@ function checkValidation(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+const userfields = ["name", "email", "gender", "timezone"];
+
 export {
+  validateName,
   validateEmail,
   validateUsername,
   validatePassword,
