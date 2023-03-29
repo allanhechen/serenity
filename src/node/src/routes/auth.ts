@@ -12,7 +12,7 @@ import {
   validateUTC,
   validateColor,
   checkValidation,
-} from "../middlewares/validate";
+} from "../middlewares/validateUserFields";
 
 const jwt = require("jsonwebtoken");
 const router = Router();

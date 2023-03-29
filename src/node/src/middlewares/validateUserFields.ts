@@ -1,10 +1,19 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
-const userfields = ["name", "email", "password", "gender", "timezone", "color"];
+const userfields = [
+  "username",
+  "name",
+  "email",
+  "password",
+  "gender",
+  "timezone",
+  "color",
+];
 
 const validateName = body("name")
   .isAlphanumeric()
+  .isLength({ min: 3, max: 255 })
   .withMessage("Name is invalid");
 
 const validateUsername = body("username")
@@ -20,6 +29,7 @@ const validatePassword = body("password")
 
 const validateEmail = body("email")
   .normalizeEmail()
+  .isLength({ min: 3, max: 255 })
   .isEmail()
   .withMessage("Email is invalid");
 
@@ -43,24 +53,23 @@ function validateUserFieldSelection(
   const { field } = req.params;
 
   if (!userfields.includes(field)) {
-    return res.status(400).json({ message: "Invalid field" });
+    res.status(400).json("Field is invalid");
+    return;
   }
 
   next();
 }
 
-function validateSelectedField(
+function validateSelectedUserField(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   const { field } = req.params;
+
   switch (field) {
     case "name":
       validateName(req, res, next);
-      break;
-    case "password":
-      validatePassword(req, res, next);
       break;
     case "email":
       validateEmail(req, res, next);
@@ -75,7 +84,7 @@ function validateSelectedField(
       validateColor(req, res, next);
       break;
     default:
-      next();
+      res.status(400).json("Field is invalid");
   }
 }
 
@@ -98,7 +107,7 @@ export {
   validateUTC,
   validateColor,
   validateUserFieldSelection,
-  validateSelectedField,
+  validateSelectedUserField,
   checkValidation,
 };
 
