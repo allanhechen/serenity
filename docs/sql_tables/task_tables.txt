@@ -5,8 +5,8 @@ CREATE TABLE tasks (
   end_date DATETIME,
   status ENUM('untouched', 'inprogress', 'finished'),
   importance_rating TINYINT(1) NOT NULL,
-  repeat ENUM('never', 'daily', 'weekly', 'monthly'),
-  description VARCHAR(255) CHARACTER SET utf8mb4,
+  frequency ENUM('never', 'daily', 'weekly', 'monthly'),
+  description VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   time_required INT UNSIGNED,
   picture_url VARCHAR(255),
   hex_color VARCHAR(6)

@@ -1,0 +1,26 @@
+/api
+  /user
+    / "returns all attributes belonging to current user"
+    /{:field} "operations with the selected attribute"
+
+  /tasks
+    / "returns all tasks belonging to the current user"
+    /{:id} "operations with the task of id {:id}"
+      / "returns the task specified by id"
+      / "deletes the task specified by id"
+      /{:field} "operations with the selected field"
+  /taskgroups
+    / "returns all taskgroups belonging to the current user"
+    /{:id} "operations with the taskgroup if id {:id}"
+      / "returns the taskgroup specified by id"
+      / "deletes the taskgroup specified by id"
+      /{:field} "operations with the selected field"
+
+  /futures
+  /futuregroups
+
+  /pasts
+  /pastgroups
+
+  /events
+  /eventgroups

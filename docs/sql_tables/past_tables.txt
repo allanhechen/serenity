@@ -52,5 +52,5 @@ CREATE TABLE picturestoevents (
   eventid INT UNSIGNED NOT NULL,
   picture_url VARCHAR(255),
   PRIMARY KEY (eventid, picture_url),
-  FOREIGN KEY (eventid) REFERENCES events(eventid),
+  FOREIGN KEY (eventid) REFERENCES events(eventid)
 );
