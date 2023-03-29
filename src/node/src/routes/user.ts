@@ -1,5 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
-import createConnection from "../utils/db";
+import executeQuery from "../utils/db";
+import { AuthenticatedRequest } from "../utils/types";
+import { validateUserFields } from "../middlewares/validate";
 const router = Router();
 
 router
@@ -7,9 +9,11 @@ router
   .get((req, res) => {})
   .post((req, res) => {});
 
-router.get("/", async (req, res) => {
-  const conn = await createConnection;
-  const [rows] = await conn.execute("SELECT * FROM users");
+router.get("/", async (req: Request, res) => {
+  const userid = (req as AuthenticatedRequest).auth.userid;
+  const rows = await executeQuery("SELECT * FROM users WHERE userid = ?", [
+    userid,
+  ]);
   res.json(rows);
 });
 

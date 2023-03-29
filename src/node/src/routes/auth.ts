@@ -2,7 +2,7 @@ import { User } from "../utils/types";
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import { RowDataPacket } from "mysql2";
-import createConnection from "../utils/db";
+import execteQuery from "../utils/db";
 import {
   validateName,
   validateEmail,
@@ -28,8 +28,7 @@ router.post(
   async (req, res) => {
     let { username, password } = req.body;
 
-    const conn = await createConnection;
-    const [rows] = await conn.execute<RowDataPacket[]>(
+    const rows = await execteQuery(
       "SELECT userid, password FROM users WHERE username = ?",
       [username]
     );
@@ -50,7 +49,7 @@ router.post(
         const token = generateToken(user.userid);
         res.send(token);
       } else {
-        res.status(400).send("Invalid username or password");
+        res.status(400).send("Invalid password");
       }
     });
   }
@@ -80,8 +79,7 @@ router.post(
 );
 
 async function checkUsernameExists(username: string) {
-  const conn = await createConnection;
-  const [rows] = await conn.execute<RowDataPacket[]>(
+  const rows = await execteQuery(
     "SELECT username FROM users WHERE username = ?",
     [username]
   );
@@ -95,8 +93,7 @@ async function hashPassword(password: string) {
 }
 
 async function insertUser(userData: User, hashedPassword: string) {
-  const conn = await createConnection;
-  await conn.execute(
+  await execteQuery(
     "INSERT INTO users (name, username, password, email, gender, timezone, user_color, last_login_date, picture_url) \
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, '/path/to/profile.jpg');",
     [
