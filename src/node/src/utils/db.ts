@@ -40,8 +40,8 @@ export async function getById(
 ) {
   const query = `SELECT *
 FROM ${secondEntity}
-INNER JOIN ${firstEntity}to${secondEntity} ON ${secondEntity}.${secondEntity}id = ${firstEntity}to${secondEntity}.${secondEntity}id
-WHERE ${firstEntity}to${secondEntity}.${firstEntity}id = ${firstEntityid} AND ${firstEntity}to${secondEntity}.${secondEntity} = ${secondEntityid};`;
+INNER JOIN ${firstEntity}sto${secondEntity}s ON ${secondEntity}s.${secondEntity}id = ${firstEntity}sto${secondEntity}s.${secondEntity}id
+WHERE ${firstEntity}sto${secondEntity}s.${firstEntity}id = ${firstEntityid} AND ${firstEntity}sto${secondEntity}s.${secondEntity}id = ${secondEntityid};`;
   const rows = await executeQuery(query);
 
   if (!rows.isempty()) {
@@ -51,7 +51,13 @@ WHERE ${firstEntity}to${secondEntity}.${firstEntity}id = ${firstEntityid} AND ${
   }
 }
 
-export async function getAllOwned(userid: number, entity: string) {
+/**
+ * returns all entities owned by the given userid
+ * @param userid
+ * @param entity
+ * @returns
+ */
+export async function getAllOwned(userid: string, entity: string) {
   const query = `SELECT *
   FROM ${entity}s
   INNER JOIN usersto${entity}s ON ${entity}s.${entity}id = usersto${entity}s.${entity}id

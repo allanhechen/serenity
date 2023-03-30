@@ -5,10 +5,7 @@ import { getById } from "../utils/db";
 import { AuthenticatedRequest } from "../utils/types";
 import {
   entityfields,
-  validateImportanceRating,
-  validateDescription,
-  validateName,
-  validateColor,
+  validateSelectedEntityField,
 } from "./validateEntityFields";
 
 const taskfields = [
@@ -42,9 +39,50 @@ function validateTaskFieldSelection(
 ) {
   const { field } = req.params;
 
-  if (!entityfields.includes(field)) {
+  if (!taskfields.includes(field) && !entityfields.includes(field)) {
     res.status(400).json("Field is invalid");
     return;
   }
+
   next();
 }
+
+function validateSelectedTaskField(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { field } = req.params;
+
+  if (entityfields.includes(field)) {
+    validateSelectedEntityField(req, res, next);
+  } else {
+    switch (field) {
+      case "status":
+        validateStatus(req, res, next);
+        break;
+      case "frequency":
+        validateFrequency(req, res, next);
+        break;
+      case "startdate":
+        validateStartDate(req, res, next);
+        break;
+      case "enddate":
+        validateEndDate(req, res, next);
+        break;
+      default:
+        res.status(400).json("Field is invalid");
+    }
+  }
+  next();
+}
+
+export {
+  taskfields,
+  validateStatus,
+  validateFrequency,
+  validateStartDate,
+  validateEndDate,
+  validateTaskFieldSelection,
+  validateSelectedTaskField,
+};

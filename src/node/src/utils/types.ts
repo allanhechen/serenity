@@ -23,6 +23,10 @@ export type Future = Entity & {
   date: Date;
 };
 
+export type Past = Entity & {
+  date: Date;
+};
+
 export type Task = Entity & {
   start_date: Date;
   end_date: Date;

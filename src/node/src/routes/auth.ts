@@ -2,7 +2,7 @@ import { User } from "../utils/types";
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import { RowDataPacket } from "mysql2";
-import execteQuery from "../utils/db";
+import executeQuery from "../utils/db";
 import {
   validateName,
   validateEmail,
@@ -28,7 +28,7 @@ router.post(
   async (req, res) => {
     let { username, password } = req.body;
 
-    const rows = await execteQuery(
+    const rows = await executeQuery(
       "SELECT userid, password FROM users WHERE username = ?",
       [username]
     );
@@ -79,7 +79,7 @@ router.post(
 );
 
 async function checkUsernameExists(username: string) {
-  const rows = await execteQuery(
+  const rows = await executeQuery(
     "SELECT username FROM users WHERE username = ?",
     [username]
   );
@@ -93,7 +93,7 @@ async function hashPassword(password: string) {
 }
 
 async function insertUser(userData: User, hashedPassword: string) {
-  await execteQuery(
+  await executeQuery(
     "INSERT INTO users (name, username, password, email, gender, timezone, user_color, last_login_date, picture_url) \
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, '/path/to/profile.jpg');",
     [
