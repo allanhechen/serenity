@@ -33,22 +33,17 @@ async function executeQuery(query: string, params: any[] = []): Promise<any> {
 }
 
 export async function getById(
-  firstEntityid,
-  secondEntityid,
-  firstEntity,
-  secondEntity
+  firstEntityid: string,
+  secondEntityid: string,
+  firstEntity: string,
+  secondEntity: string
 ) {
   const query = `SELECT *
-FROM ${secondEntity}
+FROM ${secondEntity}s
 INNER JOIN ${firstEntity}sto${secondEntity}s ON ${secondEntity}s.${secondEntity}id = ${firstEntity}sto${secondEntity}s.${secondEntity}id
 WHERE ${firstEntity}sto${secondEntity}s.${firstEntity}id = ${firstEntityid} AND ${firstEntity}sto${secondEntity}s.${secondEntity}id = ${secondEntityid};`;
   const rows = await executeQuery(query);
-
-  if (!rows.isempty()) {
-    return rows;
-  } else {
-    throw new Error("Id is invalid");
-  }
+  return rows;
 }
 
 /**
@@ -61,9 +56,27 @@ export async function getAllOwned(userid: string, entity: string) {
   const query = `SELECT *
   FROM ${entity}s
   INNER JOIN usersto${entity}s ON ${entity}s.${entity}id = usersto${entity}s.${entity}id
-  WHERE usersto${entity}s.userid = ${userid} AND usersto${entity}s.${entity}id = ${entity}id;`;
+  WHERE usersto${entity}s.userid = ${userid}`;
   const rows = executeQuery(query);
   return rows;
+}
+
+/**
+ * Link a new entry between two tables
+ * @param id1 the owner
+ * @param id2 the new entry
+ * @param table1
+ * @param table2
+ */
+export async function joinNewEntry(
+  id1: string,
+  id2: string,
+  table1: string,
+  table2: string
+) {
+  const query = `INSERT INTO ${table1}sto${table2}s (${table1}id, ${table2}id)
+  VALUES(${id1}, ${id2})`;
+  await executeQuery(query);
 }
 
 export default executeQuery;

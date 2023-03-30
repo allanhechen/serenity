@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import executeQuery, { getAllOwned, getById } from "../utils/db";
+import executeQuery, { getAllOwned, getById, joinNewEntry } from "../utils/db";
 import { AuthenticatedRequest, Task } from "../utils/types";
 import {
   validateName,
@@ -14,6 +14,7 @@ import {
   validateStartDate,
   validateStatus,
   validateTaskFieldSelection,
+  validateTimeRequired,
 } from "../middlewares/validateTaskFields";
 import { checkValidation } from "../middlewares/validateUserFields";
 const router = Router();
@@ -50,7 +51,7 @@ router.route("/:id").get(async (req: Request, res) => {
   const taskid = req.params.id;
   const rows = await getById(userid, taskid, "user", "task");
 
-  if (!rows.isEmpty()) {
+  if (rows.length != 0) {
     res.json(rows);
   } else {
     res.status(400).json("Id is invalid");
@@ -73,13 +74,18 @@ router
     validateFrequency,
     validateStartDate,
     validateEndDate,
+    validateTimeRequired,
+    checkValidation,
     async (req: Request, res) => {
-      await insertTask(req.body);
+      const userid = (req as AuthenticatedRequest).auth.userid;
+      const row = await insertTask(req.body);
+      await joinNewEntry(userid, row.insertId, "user", "task");
+      res.json({ taskid: row.insertId });
     }
   );
 
 async function insertTask(taskData: Task) {
-  await executeQuery(
+  return await executeQuery(
     "INSERT INTO tasks (name, start_date, end_date, status, importance_rating, frequency, description, time_required, picture_url, hex_color) \
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
     [
@@ -88,7 +94,6 @@ async function insertTask(taskData: Task) {
       taskData.end_date,
       taskData.status,
       taskData.importance_rating,
-      taskData.frequency,
       taskData.frequency,
       taskData.description,
       taskData.time_required,

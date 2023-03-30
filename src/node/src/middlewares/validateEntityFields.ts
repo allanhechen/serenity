@@ -17,14 +17,16 @@ const entityfields = [
   "hex_color",
 ];
 
-const validateImportanceRating = body("importance_rating").isInt({
-  min: 1,
-  max: 10,
-});
+const validateImportanceRating = body("importance_rating")
+  .isInt({
+    min: 1,
+    max: 10,
+  })
+  .withMessage("Importance rating is invalid");
 
 const validateDescription = body("description")
   .trim()
-  .isLength({ max: 255 })
+  .isLength({ min: 1, max: 255 })
   .withMessage("Description is invalid");
 
 /**

@@ -20,17 +20,25 @@ const validateStatus = body("status")
   .isIn(["untouched", "inprogress", "finished"])
   .withMessage("Status is invalid");
 
-const validateFrequency = body("freuency")
+const validateFrequency = body("frequency")
   .isIn(["never", "daily", "weekly", "monthly"])
   .withMessage("Frequency is invalid");
 
 const validateStartDate = body("start_date")
-  .isDate()
+  .isISO8601()
+  .toDate()
   .withMessage("Start date is invalid");
 
 const validateEndDate = body("end_date")
-  .isDate()
+  .isISO8601()
+  .toDate()
   .withMessage("End date is invalid");
+
+const validateTimeRequired = body("time_required")
+  .isInt({
+    min: 1,
+  })
+  .withMessage("Importance rating is invalid");
 
 function validateTaskFieldSelection(
   req: Request,
@@ -70,6 +78,9 @@ function validateSelectedTaskField(
       case "enddate":
         validateEndDate(req, res, next);
         break;
+      case "timerequired":
+        validateTimeRequired(req, res, next);
+        break;
       default:
         res.status(400).json("Field is invalid");
     }
@@ -83,6 +94,7 @@ export {
   validateFrequency,
   validateStartDate,
   validateEndDate,
+  validateTimeRequired,
   validateTaskFieldSelection,
   validateSelectedTaskField,
 };
