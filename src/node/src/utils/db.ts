@@ -32,4 +32,32 @@ async function executeQuery(query: string, params: any[] = []): Promise<any> {
   }
 }
 
+export async function getById(
+  firstEntityid,
+  secondEntityid,
+  firstEntity,
+  secondEntity
+) {
+  const query = `SELECT *
+FROM ${secondEntity}
+INNER JOIN ${firstEntity}to${secondEntity} ON ${secondEntity}.${secondEntity}id = ${firstEntity}to${secondEntity}.${secondEntity}id
+WHERE ${firstEntity}to${secondEntity}.${firstEntity}id = ${firstEntityid} AND ${firstEntity}to${secondEntity}.${secondEntity} = ${secondEntityid};`;
+  const rows = await executeQuery(query);
+
+  if (!rows.isempty()) {
+    return rows;
+  } else {
+    throw new Error("Id is invalid");
+  }
+}
+
+export async function getAllOwned(userid: number, entity: string) {
+  const query = `SELECT *
+  FROM ${entity}s
+  INNER JOIN usersto${entity}s ON ${entity}s.${entity}id = usersto${entity}s.${entity}id
+  WHERE usersto${entity}s.userid = ${userid} AND usersto${entity}s.${entity}id = ${entity}id;`;
+  const rows = executeQuery(query);
+  return rows;
+}
+
 export default executeQuery;

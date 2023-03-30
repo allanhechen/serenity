@@ -12,7 +12,6 @@ const userfields = [
 ];
 
 const validateName = body("name")
-  .isAlphanumeric()
   .isLength({ min: 3, max: 255 })
   .withMessage("Name is invalid");
 
