@@ -36,9 +36,10 @@ export async function getById(
   firstEntityid: string,
   secondEntityid: string,
   firstEntity: string,
-  secondEntity: string
+  secondEntity: string,
+  fields: string = "*"
 ) {
-  const query = `SELECT *
+  const query = `SELECT ${fields}
 FROM ${secondEntity}s
 INNER JOIN ${firstEntity}sto${secondEntity}s ON ${secondEntity}s.${secondEntity}id = ${firstEntity}sto${secondEntity}s.${secondEntity}id
 WHERE ${firstEntity}sto${secondEntity}s.${firstEntity}id = ${firstEntityid} AND ${firstEntity}sto${secondEntity}s.${secondEntity}id = ${secondEntityid};`;

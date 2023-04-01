@@ -13,8 +13,8 @@ const entityfields = [
   "id",
   "name",
   "importance_rating",
-  "descrption",
-  "hex_color",
+  "description",
+  "color",
 ];
 
 const validateImportanceRating = body("importance_rating")
@@ -82,7 +82,7 @@ function validateSelectedEntityField(
     case "name":
       validateName(req, res, next);
       break;
-    case "importancerating":
+    case "importance_rating":
       validateImportanceRating(req, res, next);
       break;
     case "description":

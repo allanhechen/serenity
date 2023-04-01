@@ -38,7 +38,7 @@ const validateTimeRequired = body("time_required")
   .isInt({
     min: 1,
   })
-  .withMessage("Importance rating is invalid");
+  .withMessage("Time required is invalid");
 
 function validateTaskFieldSelection(
   req: Request,
@@ -51,7 +51,6 @@ function validateTaskFieldSelection(
     res.status(400).json("Field is invalid");
     return;
   }
-
   next();
 }
 
@@ -72,20 +71,19 @@ function validateSelectedTaskField(
       case "frequency":
         validateFrequency(req, res, next);
         break;
-      case "startdate":
+      case "start_date":
         validateStartDate(req, res, next);
         break;
-      case "enddate":
+      case "end_date":
         validateEndDate(req, res, next);
         break;
-      case "timerequired":
+      case "time_required":
         validateTimeRequired(req, res, next);
         break;
       default:
         res.status(400).json("Field is invalid");
     }
   }
-  next();
 }
 
 export {

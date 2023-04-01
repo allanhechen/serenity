@@ -25,9 +25,9 @@ router
     validateTaskFieldSelection,
     checkValidation,
     async (req: Request, res) => {
-      const { taskid, field } = req.params;
+      const { id, field } = req.params;
       const userid = (req as AuthenticatedRequest).auth.userid;
-      const rows = await getById(userid, taskid, "user", "task");
+      const rows = await getById(userid, id, "user", "task", field);
       res.json(rows);
     }
   )
@@ -35,13 +35,9 @@ router
     validateSelectedTaskField,
     checkValidation,
     async (req: Request, res) => {
-      const { field } = req.params;
-
-      const query = `UPDATE users SET ${field} = ? WHERE userid = ?`;
-      const rows = await executeQuery(query, [
-        req.body.name,
-        (req as AuthenticatedRequest).auth.userid,
-      ]);
+      const { id, field } = req.params;
+      const query = `UPDATE tasks SET ${field} = ? WHERE taskid = ?`;
+      const rows = await executeQuery(query, [req.body[field], id]);
       res.send();
     }
   );

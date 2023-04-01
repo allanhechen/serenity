@@ -32,10 +32,9 @@ router
     checkValidation,
     async (req: Request, res) => {
       const { field } = req.params;
-
       const query = `UPDATE users SET ${field} = ? WHERE userid = ?`;
       const rows = await executeQuery(query, [
-        req.body.name,
+        req.body[field],
         (req as AuthenticatedRequest).auth.userid,
       ]);
       res.send();
