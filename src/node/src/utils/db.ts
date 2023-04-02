@@ -33,7 +33,7 @@ async function executeQuery(query: string, params: any[] = []): Promise<any> {
   }
 }
 
-export async function getById(
+export async function getSingleById(
   firstEntityid: string,
   secondEntityid: string,
   firstEntity: string,
@@ -44,6 +44,22 @@ export async function getById(
 FROM ${secondEntity}s
 INNER JOIN ${firstEntity}sto${secondEntity}s ON ${secondEntity}s.${secondEntity}id = ${firstEntity}sto${secondEntity}s.${secondEntity}id
 WHERE ${firstEntity}sto${secondEntity}s.${firstEntity}id = ${firstEntityid} AND ${firstEntity}sto${secondEntity}s.${secondEntity}id = ${secondEntityid};`;
+  const rows = await executeQuery(query);
+  return rows;
+}
+
+export async function getGroupById(
+  userid: string,
+  groupid: string,
+  entityName: string,
+  fields: string = "*"
+) {
+  const query = `SELECT ${fields}
+  FROM ${entityName}s
+  INNER JOIN ${entityName}sto${entityName}groups ON ${entityName}s.${entityName}id = ${entityName}sto${entityName}groups.${entityName}id
+  INNER JOIN usersto${entityName}groups ON ${entityName}sto${entityName}groups.${entityName}groupid = usersto${entityName}groups.${entityName}groupid
+  WHERE usersto${entityName}groups.userid = ${userid}
+    AND ${entityName}sto${entityName}groups.${entityName}groupid = ${groupid};`;
   const rows = await executeQuery(query);
   return rows;
 }
@@ -87,17 +103,17 @@ export async function testIdExists(
   table: string,
   testName: string
 ) {
-  const query = `SELECT * FROM ${table}s WHERE ${testName}id = ${testid} AND userid = ${userid}`;
+  const query = `SELECT * FROM ${table} WHERE ${testName}id = ${testid} AND userid = ${userid}`;
   const rows = await executeQuery(query);
-  if (rows.isEmpty()) {
+  if (rows.length == 0) {
     return false;
   }
   return true;
 }
 
 export async function createGroup(groupData: Group, groupType: string) {
-  const query = `INSERT INTO ${groupType}sto${groupType}groups (groupname, color, picture_url)
-  VALUES(${groupData.group_name}, ${groupData.color}, ${groupData.picture_url})`;
+  const query = `INSERT INTO ${groupType}groups (groupname, color, picture_url)
+  VALUES("${groupData.group_name}", "${groupData.color}", "${groupData.picture_url}")`;
   return await executeQuery(query);
 }
 

@@ -1,7 +1,7 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import executeQuery from "../utils/db";
-import { getById } from "../utils/db";
+import { getSingleById } from "../utils/db";
 import { AuthenticatedRequest } from "../utils/types";
 import {
   entityfields,

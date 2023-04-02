@@ -2,7 +2,8 @@ import { Router, Request, Response, NextFunction } from "express";
 import executeQuery, {
   createGroup,
   getAllOwned,
-  getById,
+  getGroupById,
+  getSingleById,
   joinNewEntry,
   testIdExists,
 } from "../utils/db";
@@ -29,6 +30,23 @@ import { validateGroupName } from "../middlewares/validateGroupFields";
 const router = Router();
 
 router
+  .route("/groups/:id")
+  .get(validateSelectedId, checkValidation, async (req: Request, res) => {
+    const userid = (req as AuthenticatedRequest).auth.userid;
+    const groupid = req.params.id;
+
+    if (
+      !(await testIdExists(groupid, userid, "userstotaskgroups", "taskgroup"))
+    ) {
+      res.status(400).json("Id is invalid");
+      return;
+    }
+
+    const rows = await getGroupById(userid, groupid, "task");
+    res.json(rows);
+  });
+
+router
   .route("/groups")
   .get(async (req: Request, res) => {
     const userid = (req as AuthenticatedRequest).auth.userid;
@@ -42,37 +60,41 @@ router
       return;
     }
 
-    let { taskids } = body.taskids;
+    let { taskids } = body;
+    taskids = [...new Set(taskids)];
     let userid = (req as AuthenticatedRequest).auth.userid;
 
-    checkIfArray(taskids, res);
-    console.log("still here");
+    if (!Array.isArray(taskids)) {
+      res.status(400).json("Invalid taskids array");
+      return;
+    }
 
-    taskids.forEach(async (taskid) => {
+    for (let i = 0; i < taskids.length; i++) {
+      const taskid = taskids[i];
       if (
-        /^\d+$/.test(taskid) ||
-        !(await testIdExists(taskid, userid, "taskgroup", "task"))
+        /^\D+$/.test(taskid) ||
+        !(await testIdExists(taskid, userid, "userstotasks", "task"))
       ) {
         res.status(400).json("Invalid taskids array");
+        return;
       }
-    });
+    }
 
-    const { insertid } = await createGroup(
+    const { insertId } = await createGroup(
       {
         id: null,
-        group_name: body.name,
+        group_name: body.group_name,
         color: body.color,
-        picture_url: "path to picture",
+        picture_url: "path_to_picture",
       },
       "task"
     );
-
-    await joinNewEntry(userid, insertid, "user", "taskgroup");
-    taskids.forEach(async (taskid) => {
-      await joinNewEntry(taskid, insertid, "task", "taskgroup");
+    await joinNewEntry(userid, insertId, "user", "taskgroup");
+    taskids.forEach(async (taskid: string) => {
+      await joinNewEntry(taskid, insertId, "task", "taskgroup");
     });
 
-    res.json(insertid);
+    res.json(insertId);
   });
 
 router
@@ -84,7 +106,7 @@ router
     async (req: Request, res) => {
       const { id, field } = req.params;
       const userid = (req as AuthenticatedRequest).auth.userid;
-      const rows = await getById(userid, id, "user", "task", field);
+      const rows = await getSingleById(userid, id, "user", "task", field);
       res.json(rows);
     }
   )
@@ -105,7 +127,7 @@ router
   .get(validateSelectedId, checkValidation, async (req: Request, res) => {
     const userid = (req as AuthenticatedRequest).auth.userid;
     const taskid = req.params.id;
-    const rows = await getById(userid, taskid, "user", "task");
+    const rows = await getSingleById(userid, taskid, "user", "task");
 
     if (rows.length != 0) {
       res.json(rows);
@@ -139,12 +161,6 @@ router
       res.json({ taskid: row.insertId });
     }
   );
-
-function checkIfArray(taskids: any, res) {
-  if (!Array.isArray(taskids)) {
-    res.status(400).json("Invalid taskids array");
-  }
-}
 
 async function insertTask(taskData: Task) {
   return await executeQuery(

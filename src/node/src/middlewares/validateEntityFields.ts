@@ -6,7 +6,7 @@ import {
   checkValidation,
 } from "./validateUserFields";
 import executeQuery from "../utils/db";
-import { getById } from "../utils/db";
+import { getSingleById } from "../utils/db";
 import { AuthenticatedRequest } from "../utils/types";
 
 const entityfields = [
