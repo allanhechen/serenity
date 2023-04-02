@@ -1,4 +1,4 @@
-import { body, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import {
   validateName,
@@ -28,6 +28,8 @@ const validateDescription = body("description")
   .trim()
   .isLength({ min: 1, max: 255 })
   .withMessage("Description is invalid");
+
+const validateSelectedId = param("id").isInt({}).withMessage("Id is invalid");
 
 /**
  * Takes in arguments inside req.params, and checks if firstEntity owns secondEnity. Returns
@@ -102,5 +104,6 @@ export {
   validateDescription,
   validateName,
   validateColor,
+  validateSelectedId,
   validateSelectedEntityField,
 };

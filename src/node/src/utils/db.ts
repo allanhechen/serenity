@@ -4,6 +4,7 @@ import {
   PoolConnection,
   RowDataPacket,
 } from "mysql2/promise";
+import { Group } from "./types";
 
 const pool: Pool = createPool({
   host: "localhost",
@@ -77,6 +78,26 @@ export async function joinNewEntry(
 ) {
   const query = `INSERT INTO ${table1}sto${table2}s (${table1}id, ${table2}id)
   VALUES(${id1}, ${id2})`;
+  await executeQuery(query);
+}
+
+export async function testIdExists(
+  testid: string,
+  userid: string,
+  table: string,
+  testName: string
+) {
+  const query = `SELECT * FROM ${table}s WHERE ${testName}id = ${testid} AND userid = ${userid}`;
+  const rows = await executeQuery(query);
+  if (rows.isEmpty()) {
+    return false;
+  }
+  return true;
+}
+
+export async function createGroup(groupData: Group, groupType: string) {
+  const query = `INSERT INTO ${groupType}sto${groupType}groups (groupname, color, picture_url)
+  VALUES(${groupData.group_name}, ${groupData.color}, "path to picture")`;
   await executeQuery(query);
 }
 

@@ -1,11 +1,17 @@
 import { Router, Request, Response, NextFunction } from "express";
-import executeQuery, { getAllOwned, getById, joinNewEntry } from "../utils/db";
-import { AuthenticatedRequest, Task } from "../utils/types";
+import executeQuery, {
+  getAllOwned,
+  getById,
+  joinNewEntry,
+  testIdExists,
+} from "../utils/db";
+import { AuthenticatedRequest, Group, Task } from "../utils/types";
 import {
   validateName,
   validateImportanceRating,
   validateDescription,
   validateColor,
+  validateSelectedId,
 } from "../middlewares/validateEntityFields";
 import {
   validateEndDate,
@@ -17,11 +23,43 @@ import {
   validateTimeRequired,
 } from "../middlewares/validateTaskFields";
 import { checkValidation } from "../middlewares/validateUserFields";
+import { check } from "express-validator";
+import { validateGroupName } from "../middlewares/validateGroupFields";
 const router = Router();
+
+router
+  .route("/groups")
+  .get(async (req: Request, res) => {
+    const userid = (req as AuthenticatedRequest).auth.userid;
+    const rows = await getAllOwned(userid, "taskgroup");
+    res.json(rows);
+  })
+  .post(validateGroupName, validateColor, checkValidation, async (req, res) => {
+    if (!req.body.taskids) {
+      res.status(400).json("Missing taskids array");
+      return;
+    }
+
+    let { taskids } = req.body.taskids;
+    let userid = (req as AuthenticatedRequest).auth.userid;
+
+    checkIfArray(taskids, res);
+    console.log("still here");
+
+    taskids.forEach((taskid) => {
+      if (
+        /^\d+$/.test(taskid) ||
+        !testIdExists(taskid, userid, "taskgroup", "task")
+      ) {
+        res.status(400).json("Invalid taskids array");
+      }
+    });
+  });
 
 router
   .route("/:id/:field")
   .get(
+    validateSelectedId,
     validateTaskFieldSelection,
     checkValidation,
     async (req: Request, res) => {
@@ -32,6 +70,7 @@ router
     }
   )
   .patch(
+    validateSelectedId,
     validateSelectedTaskField,
     checkValidation,
     async (req: Request, res) => {
@@ -42,17 +81,19 @@ router
     }
   );
 
-router.route("/:id").get(async (req: Request, res) => {
-  const userid = (req as AuthenticatedRequest).auth.userid;
-  const taskid = req.params.id;
-  const rows = await getById(userid, taskid, "user", "task");
+router
+  .route("/:id")
+  .get(validateSelectedId, checkValidation, async (req: Request, res) => {
+    const userid = (req as AuthenticatedRequest).auth.userid;
+    const taskid = req.params.id;
+    const rows = await getById(userid, taskid, "user", "task");
 
-  if (rows.length != 0) {
-    res.json(rows);
-  } else {
-    res.status(400).json("Id is invalid");
-  }
-});
+    if (rows.length != 0) {
+      res.json(rows);
+    } else {
+      res.status(400).json("Id is invalid");
+    }
+  });
 
 router
   .route("/")
@@ -79,6 +120,12 @@ router
       res.json({ taskid: row.insertId });
     }
   );
+
+function checkIfArray(taskids: any, res) {
+  if (!Array.isArray(taskids)) {
+    res.status(400).json("Invalid taskids array");
+  }
+}
 
 async function insertTask(taskData: Task) {
   return await executeQuery(

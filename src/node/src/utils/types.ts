@@ -41,6 +41,13 @@ export type Event = Entity & {
   end_time: Date;
 };
 
+export type Group = {
+  id: string;
+  group_name: string;
+  color: string;
+  picture_url: string;
+};
+
 export interface AuthenticatedRequest extends Request {
   auth: {
     userid: string;
