@@ -97,8 +97,8 @@ export async function testIdExists(
 
 export async function createGroup(groupData: Group, groupType: string) {
   const query = `INSERT INTO ${groupType}sto${groupType}groups (groupname, color, picture_url)
-  VALUES(${groupData.group_name}, ${groupData.color}, "path to picture")`;
-  await executeQuery(query);
+  VALUES(${groupData.group_name}, ${groupData.color}, ${groupData.picture_url})`;
+  return await executeQuery(query);
 }
 
 export default executeQuery;

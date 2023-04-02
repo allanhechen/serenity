@@ -42,7 +42,7 @@ export type Event = Entity & {
 };
 
 export type Group = {
-  id: string;
+  id: string | null;
   group_name: string;
   color: string;
   picture_url: string;

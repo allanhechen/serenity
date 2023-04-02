@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import executeQuery, {
+  createGroup,
   getAllOwned,
   getById,
   joinNewEntry,
@@ -35,25 +36,43 @@ router
     res.json(rows);
   })
   .post(validateGroupName, validateColor, checkValidation, async (req, res) => {
-    if (!req.body.taskids) {
+    let { body } = req;
+    if (!body.taskids) {
       res.status(400).json("Missing taskids array");
       return;
     }
 
-    let { taskids } = req.body.taskids;
+    let { taskids } = body.taskids;
     let userid = (req as AuthenticatedRequest).auth.userid;
 
     checkIfArray(taskids, res);
     console.log("still here");
 
-    taskids.forEach((taskid) => {
+    taskids.forEach(async (taskid) => {
       if (
         /^\d+$/.test(taskid) ||
-        !testIdExists(taskid, userid, "taskgroup", "task")
+        !(await testIdExists(taskid, userid, "taskgroup", "task"))
       ) {
         res.status(400).json("Invalid taskids array");
       }
     });
+
+    const { insertid } = await createGroup(
+      {
+        id: null,
+        group_name: body.name,
+        color: body.color,
+        picture_url: "path to picture",
+      },
+      "task"
+    );
+
+    await joinNewEntry(userid, insertid, "user", "taskgroup");
+    taskids.forEach(async (taskid) => {
+      await joinNewEntry(taskid, insertid, "task", "taskgroup");
+    });
+
+    res.json(insertid);
   });
 
 router
