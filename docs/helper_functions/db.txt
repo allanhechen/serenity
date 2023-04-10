@@ -1,0 +1,31 @@
+function signatures: 
+name(table_name, columns, fields)
+
+userid -> otherid.
+match the order of names in tables for arguments.
+
+Inserting and Retrieving Data:
+
+  1. insert an entity into a database
+  2. insert a group into a database
+  3. insert users to a group
+  4. insert entity to a group
+  5. retrieve a single item
+  6. retrieve all items owned by group specified
+  6. a) retrieve not all in group
+
+Updating Data:
+  7. update an entity in a database
+  8. update a group in a database
+
+Deleting Data:
+  9. delete an entity in a database
+  10. delete an entity from a group
+  11. delete a group
+  12. Checking Ownership and Membership:
+  13. check if user owns an entity
+
+Checking Data:
+  14. check if user owns a group
+  15. check if entity is already in group
+  16. get all other owners of an entity/group
